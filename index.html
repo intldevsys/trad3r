@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Trading Bot Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1f2937 50%, #000000 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: clamp(2.5rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #e5e7eb 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: #9ca3af;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(75, 85, 99, 0.5);
+            border-radius: 0.75rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            border-bottom: 1px solid rgba(75, 85, 99, 0.2);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .icon {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .icon-bot { color: #60a5fa; }
+        .icon-trending { color: #10b981; }
+        .icon-alert { color: #f59e0b; }
+        .icon-heart { color: #ec4899; }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        .badge-running {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-stopped {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border-color: rgba(107, 114, 128, 0.3);
+        }
+
+        .badge-healthy {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .metric-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .metric-positive {
+            color: #22c55e;
+        }
+
+        .metric-negative {
+            color: #fca5a5;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-start {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-start:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-stop {
+            background: rgba(107, 114, 128, 0.2);
+            color: #d1d5db;
+            border-color: rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-stop:hover {
+            background: rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(75, 85, 99, 0.2);
+            color: #d1d5db;
+            border-color: rgba(75, 85, 99, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(75, 85, 99, 0.3);
+        }
+
+        .alert-container {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .no-alerts {
+            color: #10b981;
+            font-weight: 600;
+        }
+
+        .alert {
+            background: rgba(31, 41, 55, 0.5);
+            border: 1px solid #4b5563;
+            border-left: 4px solid #f59e0b;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-message {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.5rem;
+        }
+
+        .alert-timestamp {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .health-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .health-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .health-label {
+            color: #6b7280;
+            font-size: 0.875rem;
+            text-transform: capitalize;
+        }
+
+        .footer {
+            text-center;
+            color: #9ca3af;
+            font-size: 0.875rem;
+        }
+
+        .loading {
+            text-align: center;
+            color: #6b7280;
+            padding: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Crypto Trading Bot</h1>
+            <p>Advanced Automated Trading System Dashboard</p>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div class="dashboard">
+            <!-- Bot Status Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon icon-bot" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        Bot Status
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="status-row">
+                        <span class="metric-label">Status:</span>
+                        <span class="badge badge-stopped">STOPPED</span>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-group">
+                            <div class="metric-row">
+                                <span class="metric-label">Capital:</span>
+                                <span class="metric-value">$0.00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Daily P&L:</span>
+                                <span class="metric-value">$0.00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Total Trades:</span>
+                                <span class="metric-value">0</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-group">
+                            <div class="metric-row">
+                                <span class="metric-label">Success Rate:</span>
+                                <span class="metric-value">0.00%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Active Positions:</span>
+                                <span class="metric-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button class="btn btn-start">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10V9a2 2 0 012-2h2a2 2 0 012 2v1M9 10v5a2 2 0 002 2h2a2 2 0 002-2v-5"/>
+                            </svg>
+                            Start Bot
+                        </button>
+                        <button class="btn btn-stop">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10h6v4H9z"/>
+                            </svg>
+                            Stop Bot
+                        </button>
+                        <button class="btn btn-secondary">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                            Enable Trading
+                        </button>
+                        <button class="btn btn-secondary">
+                            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2l3 3"/>
+                            </svg>
+                            Disable Trading
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Metrics Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon icon-trending" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+                        </svg>
+                        Performance
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="metrics-grid">
+                        <div class="metric-group">
+                            <div class="metric-row">
+                                <span class="metric-label">Total Return:</span>
+                                <span class="metric-value">0.00%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Daily Return:</span>
+                                <span class="metric-value">0.00%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Max Drawdown:</span>
+                                <span class="metric-value metric-negative">0.00%</span>
+                            </div>
+                        </div>
+
+                        <div class="metric-group">
+                            <div class="metric-row">
+                                <span class="metric-label">Sharpe Ratio:</span>
+                                <span class="metric-value">0.00</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Win Rate:</span>
+                                <span class="metric-value">0.00%</span>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Profit Factor:</span>
+                                <span class="metric-value">0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Alerts Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon icon-alert" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                        </svg>
+                        Active Alerts
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="alert-container">
+                        <div class="no-alerts">✅ No active alerts</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Health Card -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg class="icon icon-heart" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                        System Health
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="health-grid">
+                        <div class="health-row">
+                            <span class="health-label">Overall Status:</span>
+                            <span class="badge badge-stopped">OFFLINE</span>
+                        </div>
+                        <div class="health-row">
+                            <span class="health-label">API Connection:</span>
+                            <span class="badge badge-stopped">OFFLINE</span>
+                        </div>
+                        <div class="health-row">
+                            <span class="health-label">Database:</span>
+                            <span class="badge badge-stopped">OFFLINE</span>
+                        </div>
+                        <div class="health-row">
+                            <span class="health-label">Trading Engine:</span>
+                            <span class="badge badge-stopped">OFFLINE</span>
+                        </div>
+                        <div class="health-row">
+                            <span class="health-label">Risk Manager:</span>
+                            <span class="badge badge-stopped">OFFLINE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            Last updated: --
+        </div>
+    </div>
+
+    <script>
+        // Update timestamp
+        document.addEventListener('DOMContentLoaded', function() {
+            const footer = document.querySelector('.footer');
+            footer.textContent = `Last updated: ${new Date().toLocaleString()}`;
+        });
+
+        // Add button click handlers (placeholder functionality)
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.textContent.trim();
+                console.log(`${action} clicked`);
+                // Add your API calls here
+            });
+        });
+    </script>
+</body>
+</html>

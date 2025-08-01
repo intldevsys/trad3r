@@ -1,0 +1,195 @@
+# Main Configuration for Crypto Trading Bot
+# Version: 1.0
+# Date: 2025-01-08
+
+# System Configuration
+system:
+  environment: "development"  # development, staging, production
+  log_level: "INFO"
+  max_workers: 4
+  timezone: "UTC"
+  
+# Database Configuration
+database:
+  url: "postgresql://trading_bot:password@localhost:5432/trading_bot"
+  pool_size: 10
+  max_overflow: 20
+  echo: false
+  
+# Redis Configuration
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: null
+  
+# API Configuration
+api:
+  coingecko:
+    base_url: "https://api.coingecko.com/api/v3"
+    rate_limit: 50  # requests per minute
+    timeout: 30
+    
+  coinmarketcap:
+    base_url: "https://pro-api.coinmarketcap.com/v1"
+    api_key: "${CMC_API_KEY}"
+    rate_limit: 333  # requests per minute
+    timeout: 30
+    
+  etherscan:
+    base_url: "https://api.etherscan.io/api"
+    api_key: "${ETHERSCAN_API_KEY}"
+    rate_limit: 5  # requests per second
+    timeout: 30
+    
+  moralis:
+    base_url: "https://deep-index.moralis.io/api/v2"
+    api_key: "${MORALIS_API_KEY}"
+    rate_limit: 25  # requests per second
+    timeout: 30
+    
+  twitter:
+    bearer_token: "${TWITTER_BEARER_TOKEN}"
+    rate_limit: 300  # requests per 15 minutes
+    
+  reddit:
+    client_id: "${REDDIT_CLIENT_ID}"
+    client_secret: "${REDDIT_CLIENT_SECRET}"
+    user_agent: "TradingBot/1.0"
+
+# Trading Configuration
+trading:
+  initial_capital: 1000.0  # USD
+  max_position_size_pct: 5.0  # Maximum 5% of capital per position
+  min_position_size_pct: 0.5  # Minimum 0.5% of capital per position
+  max_daily_loss_pct: 10.0  # Maximum 10% daily loss
+  max_weekly_loss_pct: 20.0  # Maximum 20% weekly loss
+  max_drawdown_pct: 15.0  # Maximum 15% drawdown
+  
+  # Supported DEX platforms
+  dex_platforms:
+    - "uniswap_v3"
+    - "sushiswap"
+    - "pancakeswap"
+    
+  # Supported networks
+  networks:
+    - "ethereum"
+    - "bsc"
+    - "polygon"
+    
+# Risk Management
+risk_management:
+  kelly_fraction: 0.25  # Conservative Kelly fraction
+  volatility_lookback: 30  # Days for volatility calculation
+  correlation_threshold: 0.7  # Maximum correlation between positions
+  
+  stop_loss:
+    default_pct: 5.0  # Default 5% stop loss
+    trailing_pct: 2.0  # 2% trailing stop
+    max_pct: 10.0  # Maximum 10% stop loss
+    
+  position_sizing:
+    method: "kelly"  # kelly, fixed, volatility
+    min_size: 50.0  # Minimum position size in USD
+    max_size: 5000.0  # Maximum position size in USD
+
+# Strategy Configuration
+strategies:
+  momentum:
+    enabled: true
+    weight: 0.25
+    lookback_period: 14
+    threshold: 0.02
+    
+  mean_reversion:
+    enabled: true
+    weight: 0.25
+    lookback_period: 20
+    std_threshold: 2.0
+    
+  arbitrage:
+    enabled: true
+    weight: 0.20
+    min_profit_pct: 0.5
+    max_slippage_pct: 0.3
+    
+  liquidity_provision:
+    enabled: true
+    weight: 0.15
+    min_apr: 10.0
+    max_impermanent_loss: 5.0
+    
+  event_driven:
+    enabled: true
+    weight: 0.15
+    sentiment_threshold: 0.6
+
+# Monitoring Configuration
+monitoring:
+  prometheus:
+    enabled: true
+    port: 8000
+    
+  alerts:
+    email:
+      enabled: false
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      username: "${EMAIL_USERNAME}"
+      password: "${EMAIL_PASSWORD}"
+      recipients: []
+      
+    telegram:
+      enabled: false
+      bot_token: "${TELEGRAM_BOT_TOKEN}"
+      chat_id: "${TELEGRAM_CHAT_ID}"
+      
+  performance_targets:
+    monthly_return_pct: 20.0
+    max_drawdown_pct: 15.0
+    sharpe_ratio: 1.5
+    win_rate_pct: 60.0
+
+# Security Configuration
+security:
+  private_key_encrypted: true
+  use_hardware_wallet: false
+  multi_sig_enabled: false
+  
+  encryption:
+    algorithm: "AES-256-GCM"
+    key_derivation: "PBKDF2"
+    iterations: 100000
+    
+# Execution Configuration
+execution:
+  gas_strategy: "fast"  # slow, standard, fast, fastest
+  max_gas_price_gwei: 100
+  slippage_tolerance_pct: 1.0
+  deadline_minutes: 20
+  
+  order_routing:
+    enabled: true
+    max_splits: 5
+    min_liquidity_usd: 10000
+    
+# Data Configuration
+data:
+  price_update_interval: 1  # seconds
+  sentiment_update_interval: 300  # seconds
+  on_chain_update_interval: 60  # seconds
+  
+  storage:
+    retention_days: 365
+    compression_enabled: true
+    backup_enabled: true
+    
+# Backtesting Configuration
+backtesting:
+  start_date: "2023-01-01"
+  end_date: "2024-12-31"
+  initial_capital: 10000.0
+  commission_pct: 0.1
+  slippage_pct: 0.05
+
