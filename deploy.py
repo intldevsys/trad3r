@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Production Deployment Script for Crypto Trading Bot
-Handles deployment, configuration, and security setup.
-"""
-
 import os
 import sys
 import subprocess
